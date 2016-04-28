@@ -2,16 +2,11 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Simplex\Framework;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\Routing;
 use Symfony\Component\HttpKernel;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\RequestContext;
 
 function render_template(Request $request)
 {
@@ -23,37 +18,15 @@ function render_template(Request $request)
 }
 
 $request = Request::createFromGlobals();
-$routes = include __DIR__.'/../src/app.php';
 
-$context = new RequestContext();
-$context->fromRequest($request);
-$matcher = new UrlMatcher($routes, $context);
-$resolver = new ControllerResolver();
+$sc = include __DIR__.'/../src/container.php';
+$sc->setParameter('routes', include __DIR__.'/../src/app.php');
+$sc->register('listener.string_response', 'Simplex\StringResponseListener');
+$sc->getDefinition('dispatcher')
+  ->addMethodCall('addSubscriber', array(new Reference('listener.string_response')))
+;
+$sc->setParameter('charset', 'UTF-8');
 
-$dispatcher = new EventDispatcher();
-
-$dispatcher->addSubscriber(new Simplex\ContentLengthListener());
-$dispatcher->addSubscriber(new Simplex\GoogleListener());
-
-// RouterListener is an implementation of the same logic we had in our framework
-// it matches the incoming request and populates the request attributes with
-// route parameters.
-$dispatcher->addSubscriber(new HttpKernel\EventListener\RouterListener($matcher, new RequestStack()));
-
-$listener = new HttpKernel\EventListener\ExceptionListener(
-  'Calendar\\Controller\\ErrorController::exceptionAction'
-);
-$dispatcher->addSubscriber($listener);
-$dispatcher->addSubscriber(new HttpKernel\EventListener\ResponseListener('UTF-8'));
-$dispatcher->addSubscriber(new HttpKernel\EventListener\StreamedResponseListener());
-
-$dispatcher->addSubscriber(new Simplex\StringResponseListener());
-
-$framework = new Framework($dispatcher, $resolver);
-$framework = new HttpKernel\HttpCache\HttpCache(
-  $framework,
-  new HttpKernel\HttpCache\Store(__DIR__.'/../cache')
-);
-$response = $framework->handle($request);
+$response = $sc->get('framework')->handle($request);
 
 $response->send();
