@@ -19,13 +19,21 @@ function render_template(Request $request)
 
 $request = Request::createFromGlobals();
 
+// The container has classes and their dependencies registered in it.
 $sc = include __DIR__.'/../src/container.php';
+// The routes for the matcher service are defined dynamically, so we can set
+// its value from here.
 $sc->setParameter('routes', include __DIR__.'/../src/app.php');
+
+// The charset parameter of the listener.response service is dynamic, so we can
+// set its value from here.
+$sc->setParameter('charset', 'UTF-8');
+
+// Registers custom Response Listener.
 $sc->register('listener.string_response', 'Simplex\StringResponseListener');
 $sc->getDefinition('dispatcher')
   ->addMethodCall('addSubscriber', array(new Reference('listener.string_response')))
 ;
-$sc->setParameter('charset', 'UTF-8');
 
 $response = $sc->get('framework')->handle($request);
 
