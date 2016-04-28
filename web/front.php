@@ -47,6 +47,8 @@ $dispatcher->addSubscriber($listener);
 $dispatcher->addSubscriber(new HttpKernel\EventListener\ResponseListener('UTF-8'));
 $dispatcher->addSubscriber(new HttpKernel\EventListener\StreamedResponseListener());
 
+$dispatcher->addSubscriber(new Simplex\StringResponseListener());
+
 $framework = new Framework($dispatcher, $resolver);
 $framework = new HttpKernel\HttpCache\HttpCache(
   $framework,
