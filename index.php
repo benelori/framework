@@ -1,5 +1,3 @@
 <?php
 
-$input = $_GET['name'];
-
-printf('Hello %s', $input);
+require_once __DIR__.'/web/front.php';
