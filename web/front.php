@@ -31,12 +31,7 @@ $sc->getDefinition('dispatcher')
   ->addMethodCall('addSubscriber', array(new Reference('listener.string_response')))
 ;
 
-$sc->register('listener.response', 'Symfony\Component\HttpKernel\EventListener\ResponseListener')
-  ->setArguments(array('%charset%'))
-;
-
-$sc->setParameter('charset', 'UTF-8');
-
+// TODO check why %% syntax is deprecated. And build RouteCollector.
 $sc->register('matcher', 'Symfony\Component\Routing\Matcher\UrlMatcher')
   ->setArguments(array('%routes%', new Reference('context')))
 ;
