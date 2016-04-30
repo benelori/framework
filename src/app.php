@@ -1,14 +1,40 @@
 <?php
 
-use Symfony\Component\Routing;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
-$routes = new Routing\RouteCollection();
-$routes->add('hello', new Routing\Route('/hello/{name}', array('name' => 'World')));
-$routes->add('bye', new Routing\Route('/bye'));
+$routes = new RouteCollection();
 
-$routes->add('leap_year', new Routing\Route('/is_leap_year/{year}', array(
-  'year' => null,
-  '_controller' => 'Calendar\\Controller\\LeapYearController::indexAction',
-)));
+$routeDefinitions = [
+  'hello' => [
+    'path' => '/hello/{name}',
+    'defaults' => [
+      'name' => 'World',
+      '_controller' => 'render_template',
+    ],
+  ],
+  'bye' => [
+    'path' => '/bye',
+    'defaults' => [
+      '_controller' => 'render_template',
+    ],
+  ],
+  'leap_year' => [
+    'path' => '/is_leap_year/{year}',
+    'defaults' => [
+      'year' => null,
+      '_controller' => 'Calendar\\Controller\\LeapYearController::indexAction',
+    ],
+  ],
+];
+
+foreach ($routeDefinitions as $name => $definition) {
+  $routeOptions = [];
+  foreach ($definition['defaults'] as $key => $default) {
+    $routeOptions[$key] = $default;
+  }
+  $route = new Route($definition['path'], $routeOptions);
+  $routes->add($name, $route);
+}
 
 return $routes;
