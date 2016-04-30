@@ -3,6 +3,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Simplex\Framework;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,19 +23,26 @@ function render_template(Request $request)
 }
 
 $request = Request::createFromGlobals();
-$routes = include __DIR__.'/../src/app.php';
 
-$context = new RequestContext();
-$context->fromRequest($request);
-$matcher = new UrlMatcher($routes, $context);
-$resolver = new ControllerResolver();
+$sc = include __DIR__.'/../src/container.php';
 
-$dispatcher = new EventDispatcher();
+$sc->register('listener.string_response', 'Simplex\StringResponseListener');
+$sc->getDefinition('dispatcher')
+  ->addMethodCall('addSubscriber', array(new Reference('listener.string_response')))
+;
 
-$dispatcher->addSubscriber(new Simplex\ContentLengthListener());
-$dispatcher->addSubscriber(new Simplex\GoogleListener());
+$sc->register('listener.response', 'Symfony\Component\HttpKernel\EventListener\ResponseListener')
+  ->setArguments(array('%charset%'))
+;
 
-$framework = new Framework($dispatcher, $matcher, $resolver);
-$response = $framework->handle($request);
+$sc->setParameter('charset', 'UTF-8');
+
+$sc->register('matcher', 'Symfony\Component\Routing\Matcher\UrlMatcher')
+  ->setArguments(array('%routes%', new Reference('context')))
+;
+
+$sc->setParameter('routes', include __DIR__.'/../src/app.php');
+
+$response = $sc->get('framework')->handle($request);
 
 $response->send();
