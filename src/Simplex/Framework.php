@@ -13,8 +13,6 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use Symfony\Component\HttpKernel\HttpKernel;
-
 class Framework {
 
   public $request;
@@ -46,38 +44,45 @@ class Framework {
   }
 
   public function init() {
-    $this->serviceCollector = new ServiceCollector();
     $this->serviceContainerBuilder = new ContainerBuilder();
     $this->serviceCompiler = new ServiceCompiler($this->serviceContainerBuilder);
-    $this->routeCollector = new RouteCollector();
+    $this->serviceCollector = new ServiceCollector();
   }
 
   public function handle() {
     try {
-      $this->serviceCollector->getServiceYamls();
-      $services = $this->serviceCollector->parseServiceFiles();
-      $this->serviceCompiler->compile($services);
-
-      $this->serviceContainerBuilder->register('listener.string_response', 'Simplex\StringResponseListener');
-      $this->serviceContainerBuilder->getDefinition('dispatcher')
-        ->addMethodCall('addSubscriber', array(new Reference('listener.string_response')))
-      ;
-
-      $routes = $this->routeCollector->collectRoutes();
-      // TODO check why %% syntax is deprecated. And build RouteCollector.
-      $this->serviceContainerBuilder->register('matcher', 'Symfony\Component\Routing\Matcher\UrlMatcher')
-        ->setArguments(array('%routes%', new Reference('context')))
-      ;
-
-      $this->serviceContainerBuilder->setParameter('routes', $routes);
-
-      $response = $this->serviceContainerBuilder->get('http_kernel')->handle($this->request);
+      $this->handleServices();
+      $this->registerMatcher();
+      $response = $this->getHttpKernel()->handle($this->request);
     }
     catch (\Exception $e) {
       $response = new Response($e->getMessage(), 500);
     }
 
     return $response;
+  }
+
+  private function handleServices() {
+    $this->serviceCollector->getServiceYamls();
+    $services = $this->serviceCollector->parseServiceFiles();
+    $this->serviceCompiler->compile($services);
+  }
+
+  private function getRoutes() {
+    $this->routeCollector = $this->serviceContainerBuilder->get('route_collector');
+    return $this->routeCollector->collectRoutes();
+  }
+
+  private function registerMatcher() {
+    $this->serviceContainerBuilder->register('matcher', 'Symfony\Component\Routing\Matcher\UrlMatcher')
+      ->setArguments(array('%routes%', new Reference('context')))
+    ;
+
+    $this->serviceContainerBuilder->setParameter('routes', $this->getRoutes());
+  }
+
+  private function getHttpKernel() {
+    return $this->serviceContainerBuilder->get('http_kernel');
   }
 
 }

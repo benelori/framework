@@ -1,4 +1,6 @@
 services:
+  route_collector:
+    class: 'Simplex\Service\RouteCollector'
   context:
     class: 'Symfony\Component\Routing\RequestContext'
   request_stack:
@@ -14,12 +16,15 @@ services:
   listener.exception:
     class: 'Symfony\Component\HttpKernel\EventListener\ExceptionListener'
     arguments: ['Calendar\Controller\ErrorController::exceptionAction']
+  listener.string_response:
+    class: 'Simplex\StringResponseListener'
   dispatcher:
     class: 'Symfony\Component\EventDispatcher\EventDispatcher'
     calls:
       - ['addSubscriber', ['@listener.router']]
       - ['addSubscriber', ['@listener.response']]
       - ['addSubscriber', ['@listener.exception']]
+      - ['addSubscriber', ['@listener.string_response']]
   http_kernel:
     class: 'Symfony\Component\HttpKernel\HttpKernel'
     arguments: ['@dispatcher', '@resolver']
