@@ -5,16 +5,16 @@
  * Contains Simplex\ContentLengthListener.
  */
 
-namespace Simplex;
+namespace Calendar\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class ContentLengthListener implements EventSubscriberInterface{
 
-  public function onResponse(GetResponseEvent $event)
+  public function onResponse(FilterResponseEvent $event)
   {
-    var_dump($event);
     $response = $event->getResponse();
     $headers = $response->headers;
 
@@ -25,7 +25,7 @@ class ContentLengthListener implements EventSubscriberInterface{
 
   public static function getSubscribedEvents()
   {
-    return array('response' => array('onResponse', -255));
+    return array(KernelEvents::RESPONSE => array('onResponse', -255));
   }
 
 }

@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: lolo
- * Date: 30.04.2016
- * Time: 18:57
- */
 
-namespace Simplex;
+namespace Simplex\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;

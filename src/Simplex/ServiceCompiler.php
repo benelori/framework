@@ -24,6 +24,9 @@ class ServiceCompiler {
       if (isset($serviceDefinition['calls']) && !empty($serviceDefinition['calls'])) {
         $this->addCalls($service, $serviceDefinition);
       }
+      if (isset($serviceDefinition['tags']) && !empty($serviceDefinition['tags'])) {
+        $this->addTags($service, $serviceDefinition);
+      }
     }
   }
 
@@ -51,6 +54,24 @@ class ServiceCompiler {
     foreach ($serviceDefinition['calls'] as $call) {
       $argumentArray = $this->getArguments($call[1]);
       $service->addMethodCall($call[0], $argumentArray);
+    }
+  }
+
+  public function addTags(Definition $service, $serviceDefinition) {
+    foreach ($serviceDefinition['tags'] as $tags) {
+      $attributes = [];
+      $name = '';
+      foreach ($tags as $key => $tag) {
+        if ($key == 'name') {
+          $name = $tag;
+        }
+        else {
+          $attributes[] = $tag;
+        }
+      }
+      if (!empty($name)) {
+        $service->addTag($name, $attributes);
+      }
     }
   }
 

@@ -5,14 +5,15 @@
  * Contains Simplex\GoogleListener.
  */
 
-namespace Simplex;
-
+namespace Calendar\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class GoogleListener implements EventSubscriberInterface {
 
-  public function onResponse(ResponseEvent $event)
+  public function onResponse(FilterResponseEvent $event)
   {
     $response = $event->getResponse();
 
@@ -28,7 +29,7 @@ class GoogleListener implements EventSubscriberInterface {
 
   public static function getSubscribedEvents()
   {
-    return array('response' => 'onResponse');
+    return array(KernelEvents::RESPONSE => 'onResponse');
   }
 
 }

@@ -1,0 +1,9 @@
+services:
+  listener.content_length:
+    class: 'Calendar\EventListener\ContentLengthListener'
+    tags:
+      - { name: event.listener }
+  listener.google_code:
+      class: 'Calendar\EventListener\GoogleListener'
+      tags:
+        - { name: event.listener }

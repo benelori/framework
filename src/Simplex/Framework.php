@@ -46,6 +46,7 @@ class Framework {
   public function init() {
     $this->serviceContainerBuilder = new ContainerBuilder();
     $this->serviceCompiler = new ServiceCompiler($this->serviceContainerBuilder);
+    $this->serviceContainerBuilder->addCompilerPass(new EventListenerCompilerPass());
     $this->serviceCollector = new ServiceCollector();
   }
 
@@ -53,6 +54,7 @@ class Framework {
     try {
       $this->handleServices();
       $this->registerMatcher();
+      $this->serviceContainerBuilder->compile();
       $response = $this->getHttpKernel()->handle($this->request);
     }
     catch (\Exception $e) {
@@ -63,7 +65,6 @@ class Framework {
   }
 
   private function handleServices() {
-    $this->serviceCollector->getServiceYamls();
     $services = $this->serviceCollector->parseServiceFiles();
     $this->serviceCompiler->compile($services);
   }

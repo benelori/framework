@@ -15,9 +15,9 @@ services:
     arguments: ['UTF-8']
   listener.exception:
     class: 'Symfony\Component\HttpKernel\EventListener\ExceptionListener'
-    arguments: ['Calendar\Controller\ErrorController::exceptionAction']
+    arguments: ['Simplex\Controller\ErrorController::exceptionAction']
   listener.string_response:
-    class: 'Simplex\StringResponseListener'
+    class: 'Simplex\EventListener\StringResponseListener'
   dispatcher:
     class: 'Symfony\Component\EventDispatcher\EventDispatcher'
     calls:
