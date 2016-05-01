@@ -23,29 +23,7 @@ function render_template(Request $request)
 }
 
 $request = Request::createFromGlobals();
-
-$serviceCollector = new \Simplex\ServiceCollector();
-$serviceCollector->getServiceYamls();
-$services = $serviceCollector->parseServiceFiles();
-
-$sc = new \Symfony\Component\DependencyInjection\ContainerBuilder();
-$container = new \Simplex\ServiceCompiler($sc);
-$container->compile($services);
-
-
-
-$sc->register('listener.string_response', 'Simplex\StringResponseListener');
-$sc->getDefinition('dispatcher')
-  ->addMethodCall('addSubscriber', array(new Reference('listener.string_response')))
-;
-
-// TODO check why %% syntax is deprecated. And build RouteCollector.
-$sc->register('matcher', 'Symfony\Component\Routing\Matcher\UrlMatcher')
-  ->setArguments(array('%routes%', new Reference('context')))
-;
-
-$sc->setParameter('routes', include __DIR__.'/../src/app.php');
-
-$response = $sc->get('framework')->handle($request);
+$kernel = new Framework($request);
+$response = $kernel->handle();
 
 $response->send();

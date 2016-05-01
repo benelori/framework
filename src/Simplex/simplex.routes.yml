@@ -1,0 +1,16 @@
+hello:
+  path: '/hello/{name}'
+  defaults:
+    name: 'World'
+    _controller: 'render_template'
+
+bye:
+  path: '/bye'
+  defaults:
+    _controller: 'render_template'
+
+is_leap_year:
+  path: '/is_leap_year/{year}'
+  defaults:
+    year: null
+    _controller: 'Calendar\Controller\LeapYearController::indexAction'

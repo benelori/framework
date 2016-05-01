@@ -20,6 +20,6 @@ services:
       - ['addSubscriber', ['@listener.router']]
       - ['addSubscriber', ['@listener.response']]
       - ['addSubscriber', ['@listener.exception']]
-  framework:
-    class: 'Simplex\Framework'
+  http_kernel:
+    class: 'Symfony\Component\HttpKernel\HttpKernel'
     arguments: ['@dispatcher', '@resolver']
