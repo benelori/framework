@@ -65,13 +65,13 @@ class Framework {
   }
 
   private function handleServices() {
-    $services = $this->serviceCollector->parseServiceFiles();
+    $services = $this->serviceCollector->parseFiles();
     $this->serviceCompiler->compile($services);
   }
 
   private function getRoutes() {
     $this->routeCollector = $this->serviceContainerBuilder->get('route_collector');
-    return $this->routeCollector->collectRoutes();
+    return $this->routeCollector->parseFiles();
   }
 
   private function registerMatcher() {

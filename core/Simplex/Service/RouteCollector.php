@@ -2,14 +2,13 @@
 
 namespace Simplex\Service;
 
-
-use Symfony\Component\Finder\Finder;
+use Simplex\YamlCollector;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
 
-class RouteCollector {
+class RouteCollector extends YamlCollector{
 
   protected $routeFile;
   protected $routeDefinitions;
@@ -20,8 +19,8 @@ class RouteCollector {
     $this->routes = new RouteCollection();
   }
 
-  public function collectRoutes() {
-    $this->locateFiles();
+  public function parseFiles() {
+    $this->routeFiles = $this->locateFiles('*.routes.yml');
     foreach ($this->routeFiles as $filePath) {
       $routeFile = file_get_contents($filePath);
       $yaml = new Parser();
@@ -34,21 +33,6 @@ class RouteCollector {
     }
 
     return $this->routes;
-  }
-
-  public function locateFiles() {
-    $finder = new Finder();
-    $rootDirectory = getcwd();
-
-    $directories = array(
-      $rootDirectory . '/core',
-      $rootDirectory . '/src',
-    );
-
-    $finder->files()->in($directories)->name('*.routes.yml');
-    foreach ($finder as $file) {
-      $this->routeFiles[] = $file->getRealpath();
-    }
   }
 
   public function compileRoutes() {
