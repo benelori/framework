@@ -6,7 +6,9 @@ services:
   request_stack:
     class: 'Symfony\Component\HttpFoundation\RequestStack'
   resolver:
-    class: 'Symfony\Component\HttpKernel\Controller\ControllerResolver'
+    class: 'Simplex\Controller\SimplexControllerResolver'
+    calls:
+      - ['setContainer', ['@service_container']]
   listener.router:
     class: 'Symfony\Component\HttpKernel\EventListener\RouterListener'
     arguments: ['@matcher', '@request_stack']
