@@ -36,7 +36,14 @@ class ServiceCollector {
 
   public function locateFiles() {
     $finder = new Finder();
-    $finder->files()->in(__DIR__ . '/../..')->name('*.services.yml');
+    $rootDirectory = getcwd();
+
+    $directories = array(
+      $rootDirectory . '/core',
+      $rootDirectory . '/src',
+    );
+
+    $finder->files()->in($directories)->name('*.services.yml');
     foreach ($finder as $file) {
       $this->serviceFiles[] = $file->getRealpath();
     }

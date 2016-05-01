@@ -1,16 +1,15 @@
 <?php
 
-namespace Calendar\Controller;
+namespace Simplex\Calendar\Controller;
 
-use Calendar\Service\LeapYearManager;
+use Simplex\Calendar\Service\LeapYearManager;
 use Simplex\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 class LeapYearController extends ControllerBase {
 
   /**
-   * @var \Calendar\Service\LeapYearManager
+   * @var \Simplex\Calendar\Service\LeapYearManager
    */
   protected $leapYearManager;
 
@@ -24,13 +23,12 @@ class LeapYearController extends ControllerBase {
     );
   }
   
-  public function indexAction($year)
-  {
+  public function indexAction($year) {
     if ($this->leapYearManager->isLeapYear($year)) {
-      return new Response('Yep, this is a leap year!');
+      return 'Yep, this is a leap year!';
     }
 
-    return new Response('Nope, this is not a leap year.');
+    return 'Nope, this is not a leap year.';
   }
   
 }

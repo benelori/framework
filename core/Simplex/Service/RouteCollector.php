@@ -38,7 +38,14 @@ class RouteCollector {
 
   public function locateFiles() {
     $finder = new Finder();
-    $finder->files()->in(__DIR__ . '/../..')->name('*.routes.yml');
+    $rootDirectory = getcwd();
+
+    $directories = array(
+      $rootDirectory . '/core',
+      $rootDirectory . '/src',
+    );
+
+    $finder->files()->in($directories)->name('*.routes.yml');
     foreach ($finder as $file) {
       $this->routeFiles[] = $file->getRealpath();
     }

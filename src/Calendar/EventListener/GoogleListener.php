@@ -5,7 +5,7 @@
  * Contains Simplex\GoogleListener.
  */
 
-namespace Calendar\EventListener;
+namespace Simplex\Calendar\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;

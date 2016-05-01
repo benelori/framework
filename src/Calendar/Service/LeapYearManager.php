@@ -1,6 +1,6 @@
 <?php
 
-namespace Calendar\Service;
+namespace Simplex\Calendar\Service;
 
 class LeapYearManager {
 
