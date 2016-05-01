@@ -48,10 +48,9 @@ class ServiceCompiler {
   }
   
   public function addCalls(Definition $service, $serviceDefinition) {
-
     foreach ($serviceDefinition['calls'] as $call) {
-      $argumentArray = $this->getArguments($call['arguments']);
-      $service->addMethodCall($call['method'], $argumentArray);
+      $argumentArray = $this->getArguments($call[1]);
+      $service->addMethodCall($call[0], $argumentArray);
     }
   }
 

@@ -24,7 +24,15 @@ function render_template(Request $request)
 
 $request = Request::createFromGlobals();
 
-$sc = include __DIR__.'/../src/container.php';
+$serviceCollector = new \Simplex\ServiceCollector();
+$serviceCollector->getServiceYamls();
+$services = $serviceCollector->parseServiceFiles();
+
+$sc = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+$container = new \Simplex\ServiceCompiler($sc);
+$container->compile($services);
+
+
 
 $sc->register('listener.string_response', 'Simplex\StringResponseListener');
 $sc->getDefinition('dispatcher')
