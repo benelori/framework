@@ -1,0 +1,5 @@
+is_leap_year:
+  path: '/is_leap_year/{year}'
+  defaults:
+    year: null
+    _controller: 'Calendar\Controller\LeapYearController::indexAction'

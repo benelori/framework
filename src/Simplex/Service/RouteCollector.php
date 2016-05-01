@@ -3,6 +3,7 @@
 namespace Simplex\Service;
 
 
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Yaml\Exception\ParseException;
@@ -13,23 +14,34 @@ class RouteCollector {
   protected $routeFile;
   protected $routeDefinitions;
   protected $routes;
+  protected $routeFiles;
 
   public function __construct() {
     $this->routes = new RouteCollection();
   }
 
   public function collectRoutes() {
-    $this->routeFile = file_get_contents(__DIR__. '/../simplex.routes.yml');
-
-    $yaml = new Parser();
-    try {
-      $this->routeDefinitions = $yaml->parse($this->routeFile);
-      $this->compileRoutes();
-    } catch (ParseException $e) {
-      printf("Unable to parse the YAML string: %s", $e->getMessage());
+    $this->locateFiles();
+    foreach ($this->routeFiles as $filePath) {
+      $routeFile = file_get_contents($filePath);
+      $yaml = new Parser();
+      try {
+        $this->routeDefinitions = $yaml->parse($routeFile);
+        $this->compileRoutes();
+      } catch (ParseException $e) {
+        printf("Unable to parse the YAML string: %s", $e->getMessage());
+      }
     }
 
     return $this->routes;
+  }
+
+  public function locateFiles() {
+    $finder = new Finder();
+    $finder->files()->in(__DIR__ . '/../..')->name('*.routes.yml');
+    foreach ($finder as $file) {
+      $this->routeFiles[] = $file->getRealpath();
+    }
   }
 
   public function compileRoutes() {
