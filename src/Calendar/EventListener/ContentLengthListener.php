@@ -7,13 +7,14 @@
 
 namespace Simplex;
 
-
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 class ContentLengthListener implements EventSubscriberInterface{
 
-  public function onResponse(ResponseEvent $event)
+  public function onResponse(GetResponseEvent $event)
   {
+    var_dump($event);
     $response = $event->getResponse();
     $headers = $response->headers;
 
