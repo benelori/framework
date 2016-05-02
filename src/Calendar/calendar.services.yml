@@ -1,0 +1,11 @@
+services:
+  listener.content_length:
+    class: 'Simplex\Calendar\EventListener\ContentLengthListener'
+    tags:
+      - { name: event.listener }
+  listener.google_code:
+    class: 'Simplex\Calendar\EventListener\GoogleListener'
+    tags:
+      - { name: event.listener }
+  calendar.leap_year_manager:
+    class: 'Simplex\Calendar\Service\LeapYearManager'

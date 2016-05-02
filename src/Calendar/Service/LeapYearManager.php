@@ -1,9 +1,9 @@
 <?php
 
-namespace Calendar\Model;
+namespace Simplex\Calendar\Service;
 
-class LeapYear
-{
+class LeapYearManager {
+
   public function isLeapYear($year = null)
   {
     if (null === $year) {
